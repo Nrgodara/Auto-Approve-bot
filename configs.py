@@ -7,6 +7,6 @@ class Config:
     FSUB = getenv("FSUB", "Aditya_ranjan_MathsComplete")
     CHID = int(getenv("CHID", "-1001945845419"))
     SUDO = list(map(int, getenv("SUDO", "1280494242").split()))
-    MONGO_URI = getenv("MONGO_URI", "mongodb+srv://sumansamtiya83:<db_password>@cluster0.p7l7y.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+    MONGO_URI = getenv("MONGO_URI", "mongodb+srv://sumansamtiya83:suman321@cluster0.p7l7y.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
     
 cfg = Config()
