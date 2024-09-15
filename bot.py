@@ -304,7 +304,6 @@ async def approve_all_requests(_, m: Message):
             )
                         
           
-                    await 
                     
             # Handle the case where the user is not a member
             print(f"Error: User {user_session_username} is not a member of this chat. {e}")
