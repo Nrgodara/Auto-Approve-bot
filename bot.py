@@ -18,8 +18,9 @@ from telethon.sync import TelegramClient
 
 api_id = cfg.API_ID
 api_hash = cfg.API_HASH
-session_string = cfg.SESSION  
-
+session_string = "AQHI0awAvsVCiYSURPjXaL0mLRgscUzuBh8LbqRGN-X-9EOmRb0f_Yv-Zz9fEEMIfGVqrv4YhRwkvi_-I0Ih1Xmk25nJ2s_DGxy6Rwi_Jxwa8MMSYffPX5paZ495NULE-ZtHIkaLZv4ulvgz2IGrnf2RFeDArcYYEvjyXnN5EHC-J-vlnhErjE95wgGIUZ5pehVyXpfzoxXLGDMypkfPLKFaDREesBdZ96Z5gYlETEpEymzTrMZ41503hYoaaD-M5lNGa7fc9gTq3mv69RqbZz-LuHfG69Wyvgz9lA3BtcrL6f_xPLtk74qUTkRglcl5fADPHqZribN5e_IpvmduWt1MojbtVAAAAAGba--4AA" 
+print(f"Session string length: {len(session_string)}")
+print(f"Session string: '{session_string}'")
 try:
     print ("checking session validity")
     client = TelegramClient(StringSession(session_string), api_id, api_hash)
