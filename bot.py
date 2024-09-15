@@ -59,6 +59,7 @@ app = Client(
 )
     
     
+UserM = Client(name="AcceptUser", session_string="BQF60A4ARev2RW62XHl4Fpml-7v65zFYEge-FXS1R4ZRSeWL1jCtaNXHZc6K1sMNPKPRm5afFky7zP7v-yt1Y2-cE9iol789_8GQwFxcgx_E7EUg95a8XlKpJCXrlICA021IbUlV-Rq6lEyyc6_DzoRnZ34Oo2B5dQiOLgouxA8UTFv9thpBOt0P3buH6jQdvhTjPxztI-x4F852flZ9NM2yfjm_Cp89timCg33-hN_WEnLfIA8ArIiIKiW7FIukqP0lRlu-jPPOIkPedW5_4NSeB0EdBD8-01PiwBw7UhXM_lmGOXGVVLINYbevIypT7Th2dviICSV2Iydhe1NLsQeEJzRQAAAAGPi72fAA")
         
     
     
@@ -331,7 +332,7 @@ async def approve_all_requests(_, m: Message):
             return
 
         # Retrieve and process pending join requests using user_client
-        pending_requests = user_client.get_chat_join_requests(m.chat.id)  # This returns an async generator
+        pending_requests = userM.get_chat_join_requests(m.chat.id)  # This returns an async generator
 
         approved_count = 0
 
