@@ -2,7 +2,7 @@ from pyrogram.types import Message, InlineKeyboardButton, InlineKeyboardMarkup, 
 from pyrogram import filters, Client, errors, enums
 from pyrogram.errors import UserNotParticipant
 from pyrogram.errors.exceptions.flood_420 import FloodWait
-from pyrogram.types.messages_and_media.message import Str
+
 from telethon.sessions import StringSession
 from telethon import TelegramClient
 from database import add_user, add_group, all_users, all_groups, users, remove_user
@@ -15,7 +15,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger(__name__)
 #-_-_-_-_-_-_-_-_-_-__-__-#
 
-from telethon.sync import TelegramClient
+#from telethon.sync import TelegramClient
 #from telethon.sessions import StringSession
 
 API_ID = cfg.API_ID
@@ -64,7 +64,7 @@ app = Client(
  #Initialize user client with StringSession
 if cfg.SESSION:
     user_client = TelegramClient(
-        session_name=StringSession(cfg.SESSION),
+        StringSession(cfg.SESSION),
         api_id=cfg.API_ID,
         api_hash=cfg.API_HASH
     )
@@ -138,7 +138,7 @@ async def op(_, m :Message):
             await m.reply_photo("https://telegra.ph/file/a782e3bbbe40df8a4bb67.jpg", caption="**🦊 Hello {}!\nI'm an auto approve [Admin Join Requests]({}) Bot.\nI can approve users in Groups/Channels.Add me to your chat and promote me to admin with add members permission.\n\n__Powerd By : @Mr_MAHIji**".format(m.from_user.mention, "https://t.me/telegram/153"), reply_markup=keyboard)
     
         elif m.chat.type == enums.ChatType.GROUP or enums.ChatType.SUPERGROUP:
-            keyboar = InlineKeyboardMarkup(
+            keyboard = InlineKeyboardMarkup(
                 [
                     [
                         InlineKeyboardButton("💁‍♂️ Start me private 💁‍♂️", url="https://t.me/Autoaccept_pendingrequests_mbot?start=start")
