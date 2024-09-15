@@ -13,7 +13,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger(__name__)
 #-_-_-_-_-_-_-_-_-_-__-__-#
 
-from telethon.sync import TelegramClientfrom telethon.sync import TelegramClient
+from telethon.sync import TelegramClient
 #from telethon.sessions import StringSession
 
 api_id = 'YOUR_API_ID'
