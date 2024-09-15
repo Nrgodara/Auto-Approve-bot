@@ -21,6 +21,7 @@ api_hash = 'YOUR_API_HASH'
 session_string = 'YOUR_SESSION_STRING'  # Replace with your session string
 
 try:
+    print ("checking session validity")
     client = TelegramClient(StringSession(session_string), api_id, api_hash)
     client.start()
     print("Session string is valid and client is connected.")
