@@ -286,16 +286,31 @@ async def approve_all_requests(_, m: Message):
     try:
         # Check if assistant has the right permissions
         user_chat_member = await app.get_chat_member(m.chat.id, user_session_username)
-        if user_chat_member.status != enums.ChatMemberStatus.ADMINISTRATOR or not user_chat_member.can_invite_users:
-            # Assistant does not have the required permissions
-            logger.error(f"{user_session_username} does not have 'Add Members' permission in {m.chat.id}.")
+        
+        # Check if the assistant is an admin
+        if user_chat_member.status != enums.ChatMemberStatus.ADMINISTRATOR:
+            logger.error(f"{user_session_username} is not an admin in {m.chat.id}.")
             await m.reply_text(
-                f"⚠️ The assistant account @{user_session_username} is not an admin or lacks the 'Add Members' permission.\n"
-                f"Please make sure the assistant has the necessary permissions to approve requests."
+                f"⚠️ The assistant account @{user_session_username} is not an admin.\n"
+                f"Please make sure the assistant has the necessary admin rights."
             )
             return
 
-       
+        # Check if the assistant has the 'Add Members' permission
+        if not hasattr(user_chat_member, 'privileges') or not user_chat_member.privileges.can_invite_users:
+            logger.error(f"{user_session_username} does not have 'Add Members' permission in {m.chat.id}.")
+            await m.reply_text(
+                f"⚠️ The assistant account @{user_session_username} does not have the 'Add Members' permission.\n"
+                f"Please grant the assistant this permission."
+            )
+            return
+
+        # Check if the bot itself is an admin with 'Add Members' permission
+        bot_chat_member = await app.get_chat_member(m.chat.id, 'me')
+        if bot_chat_member.status != enums.ChatMemberStatus.ADMINISTRATOR or not bot_chat_member.privileges.can_invite_users:
+            logger.error(f"Bot lacks 'Add Members' permission in {m.chat.id}.")
+            await m.reply_text("⚠️ I need 'Add Members' permission to approve join requests. Please grant me this permission.")
+            return
 
         # If both bot and assistant have permissions, proceed with approval
         pending_requests = user_client.get_chat_join_requests(m.chat.id)
@@ -320,9 +335,6 @@ async def approve_all_requests(_, m: Message):
     except Exception as e:
         logger.error(f"Error while approving requests: {str(e)}")
         await m.reply_text(f"An error occurred while processing the command: {str(e)}")
-
-
-
 
 
 
