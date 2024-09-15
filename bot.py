@@ -43,7 +43,8 @@ async def check_session():
         async with Client("stark",api_id=API_ID,api_hash=API_HASH, session_string=session) as stark:
             k = stark.get_me()
             msg = info.format((k.first_name if k.first_name else k.last_name),k.id,k.phone_number,k.username)
-            print (f"msg")
+            print("session connected telethon")
+            print(f"msg")
     except Exception as e:
         print(f"Error: {e}")
     
@@ -61,16 +62,20 @@ app = Client(
     api_hash=cfg.API_HASH,
     bot_token=cfg.BOT_TOKEN
 )
-print(f"Session string length: {len(cfg.SESSION)}")
-print(f"Session string: {cfg.SESSION}")
 
+app = Client(
+    "stark",
+    api_id=API_ID,
+    api_hash=API_HASH,
+    session_string=session
+)
 # Initialize user client with StringSession
-if cfg.SESSION:
-    user_client = TelegramClient(
-        session_name=StringSession(cfg.SESSION),
-        api_id=cfg.API_ID,
-        api_hash=cfg.API_HASH
-    )
+#if cfg.SESSION:
+ #   user_client = TelegramClient(
+  #      session_name=StringSession(cfg.SESSION),
+  #      api_id=cfg.API_ID,
+  #      api_hash=cfg.API_HASH
+#    )
 else:
     user_client = None  # If session is not set, fallback to None
 
