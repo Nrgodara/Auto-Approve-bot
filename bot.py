@@ -20,7 +20,7 @@ from telethon.sync import TelegramClient
 
 API_ID = cfg.API_ID
 API_HASH = cfg.API_HASH
-session = "BQGCVgcAxAviJQXUqk92KZvVjWyTvA5hU_2cAmL3azzmwR3Eu0bo4EFpka9XJojAxoTSZUV8b-Dmi4tt72EL280g1r3YUdwYitJI0cPc05CZvuXQdwhXG0N8zZEyKKtZUqc2Ci_LYx01vfqVpEKh4rp8CotbYaUF64hf5g4fIx-PLmNlB50cknJUi2ZRr7r6hVev8LVJfAZx99-83B4x44M1bIELhaxz0Q-V-bJi5yVmSQqMBe95bs3w-m95qISimMyckNpxnrMnN4yo8gj6wILrBTC3LWiHh0bNCFKUsSLvKPN1iyiPJfUUCOklDyUQpO5prvS8pJJmvmILlmj9HXuXHfiQOgAAAABMUsqiAA" 
+session = "1BVtsOIwBu2X7acNGcO6QY9jeoTCIhU4LLgmLcLx2uXWXltiem0eOE8o1lhAJJ-Sk2Eh_zt76IPIGb7vIaSR2AoE7lapXOmOtN67Izka_WDqsKbcMXrkQIa0bUBI5C_fjHC1CI7RCGCHjH0wkjCl8MG4hycDtb-ZUQmeY39laZWp_I7XE2Sfuta3hG7DshLEQ5DwF9JNsU5oS6swNOioPBm-dtcJqQhse5m7JknapdsBKgUq-cNYIEN71xJOmY1gtENI3umEtwd7bOnWbpfmrExdQ_GtTKmBd76kAR3roYIY36r5Qkz3oF0OvfuJDX1oEpOvxub9oQ5wmA71ZeyOOpKgd2-vJ1w8=" 
 #print(f"Session string length: {len(session_string)}")
 #print(f"Session string: '{session_string}'")
 try:
@@ -35,18 +35,10 @@ except Exception as e:
     print(".")
     print(".")
     print(".")
-    pass 
+   
 
 
-async def check_session():
-    try:
-        async with Client("stark",api_id=API_ID,api_hash=API_HASH, session_string=session) as stark:
-            k = stark.get_me()
-            msg = info.format((k.first_name if k.first_name else k.last_name),k.id,k.phone_number,k.username)
-            print("session connected telethon")
-            print(f"msg")
-    except Exception as e:
-        print(f"Error: {e}")
+
     
 
       
@@ -62,26 +54,19 @@ app = Client(
     api_hash=cfg.API_HASH,
     bot_token=cfg.BOT_TOKEN
 )
-if cfg.SESSION:
-    app = Client(
-        "stark",
-        api_id=API_ID,
-        api_hash=API_HASH,
-        session_string=cfg.SESSION
-    )
     
     
         
     
     
 
-# Initialize user client with StringSession
-#if cfg.SESSION:
- #   user_client = TelegramClient(
-  #      session_name=StringSession(cfg.SESSION),
-  #      api_id=cfg.API_ID,
-  #      api_hash=cfg.API_HASH
-#    )
+ Initialize user client with StringSession
+if cfg.SESSION:
+    user_client = TelegramClient(
+        session_name=StringSession(cfg.SESSION),
+        api_id=cfg.API_ID,
+        api_hash=cfg.API_HASH
+    )
 else:
     user_client = None  # If session is not set, fallback to None
 
