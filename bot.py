@@ -276,7 +276,6 @@ async def approve_all_requests(_, m: Message):
     logger.info(f"Command received from user {m.from_user.id} in chat {m.chat.id}.")
 
     if m.chat.type == enums.ChatType.PRIVATE:
-        # Private chat: Inform the user to use this command in a group or channel
         logger.info(f"Private chat detected, informing user {m.from_user.id}.")
         await m.reply_text(
             f"Hi {m.from_user.mention}, use this command in your channel or group to approve pending requests."
@@ -286,7 +285,14 @@ async def approve_all_requests(_, m: Message):
     try:
         # Check if assistant has the right permissions
         user_chat_member = await app.get_chat_member(m.chat.id, user_session_username)
-        
+
+        if user_chat_member is None:
+            logger.error(f"Could not retrieve chat member info for {user_session_username}.")
+            await m.reply_text(
+                f"⚠️ The assistant account @{user_session_username} could not be found in this chat. Please make sure the assistant is a member."
+            )
+            return
+
         # Check if the assistant is an admin
         if user_chat_member.status != enums.ChatMemberStatus.ADMINISTRATOR:
             logger.error(f"{user_session_username} is not an admin in {m.chat.id}.")
@@ -307,18 +313,24 @@ async def approve_all_requests(_, m: Message):
 
         # Check if the bot itself is an admin with 'Add Members' permission
         bot_chat_member = await app.get_chat_member(m.chat.id, 'me')
+        
+        if bot_chat_member is None:
+            logger.error("Could not retrieve bot's chat member info.")
+            await m.reply_text("⚠️ I couldn't retrieve my permissions. Please ensure I'm in the chat and an admin.")
+            return
+        
         if bot_chat_member.status != enums.ChatMemberStatus.ADMINISTRATOR or not bot_chat_member.privileges.can_invite_users:
             logger.error(f"Bot lacks 'Add Members' permission in {m.chat.id}.")
             await m.reply_text("⚠️ I need 'Add Members' permission to approve join requests. Please grant me this permission.")
             return
 
         # If both bot and assistant have permissions, proceed with approval
-        pending_requests = user_client.get_chat_join_requests(m.chat.id)
+        pending_requests = await app.get_chat_join_requests(m.chat.id)
         approved_count = 0
 
-        async for request in pending_requests:
+        for request in pending_requests:
             try:
-                await user_client.approve_chat_join_request(m.chat.id, request.user.id)
+                await app.approve_chat_join_request(m.chat.id, request.user.id)
                 approved_count += 1
                 logger.info(f"Approved join request for user {request.user.id} in chat {m.chat.id}.")
                 await app.send_message(request.user.id, f"Hello {request.user.mention}, your join request to {m.chat.title} has been approved!")
@@ -335,6 +347,7 @@ async def approve_all_requests(_, m: Message):
     except Exception as e:
         logger.error(f"Error while approving requests: {str(e)}")
         await m.reply_text(f"An error occurred while processing the command: {str(e)}")
+
 
 
 
