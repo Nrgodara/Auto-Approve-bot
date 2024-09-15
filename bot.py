@@ -60,7 +60,7 @@ app = Client(
     
     
 
- Initialize user client with StringSession
+ #Initialize user client with StringSession
 if cfg.SESSION:
     user_client = TelegramClient(
         session_name=StringSession(cfg.SESSION),
