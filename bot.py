@@ -62,13 +62,19 @@ app = Client(
     api_hash=cfg.API_HASH,
     bot_token=cfg.BOT_TOKEN
 )
+if cfg.SESSUON:
+    app = Client(
+        "stark",
+        api_id=API_ID,
+        api_hash=API_HASH,
+        session_string=cfg.SESSION
+    )
+    
+    
+        
+    
+    
 
-app = Client(
-    "stark",
-    api_id=API_ID,
-    api_hash=API_HASH,
-    session_string=session
-)
 # Initialize user client with StringSession
 #if cfg.SESSION:
  #   user_client = TelegramClient(
