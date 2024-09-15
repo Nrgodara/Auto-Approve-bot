@@ -18,14 +18,14 @@ logger = logging.getLogger(__name__)
 from telethon.sync import TelegramClient
 #from telethon.sessions import StringSession
 
-api_id = cfg.API_ID
-api_hash = cfg.API_HASH
-session_string = "BQGCVgcAxAviJQXUqk92KZvVjWyTvA5hU_2cAmL3azzmwR3Eu0bo4EFpka9XJojAxoTSZUV8b-Dmi4tt72EL280g1r3YUdwYitJI0cPc05CZvuXQdwhXG0N8zZEyKKtZUqc2Ci_LYx01vfqVpEKh4rp8CotbYaUF64hf5g4fIx-PLmNlB50cknJUi2ZRr7r6hVev8LVJfAZx99-83B4x44M1bIELhaxz0Q-V-bJi5yVmSQqMBe95bs3w-m95qISimMyckNpxnrMnN4yo8gj6wILrBTC3LWiHh0bNCFKUsSLvKPN1iyiPJfUUCOklDyUQpO5prvS8pJJmvmILlmj9HXuXHfiQOgAAAABMUsqiAA" 
+API_ID = cfg.API_ID
+API_HASH = cfg.API_HASH
+session = "BQGCVgcAxAviJQXUqk92KZvVjWyTvA5hU_2cAmL3azzmwR3Eu0bo4EFpka9XJojAxoTSZUV8b-Dmi4tt72EL280g1r3YUdwYitJI0cPc05CZvuXQdwhXG0N8zZEyKKtZUqc2Ci_LYx01vfqVpEKh4rp8CotbYaUF64hf5g4fIx-PLmNlB50cknJUi2ZRr7r6hVev8LVJfAZx99-83B4x44M1bIELhaxz0Q-V-bJi5yVmSQqMBe95bs3w-m95qISimMyckNpxnrMnN4yo8gj6wILrBTC3LWiHh0bNCFKUsSLvKPN1iyiPJfUUCOklDyUQpO5prvS8pJJmvmILlmj9HXuXHfiQOgAAAABMUsqiAA" 
 #print(f"Session string length: {len(session_string)}")
 #print(f"Session string: '{session_string}'")
 try:
     print ("checking session validity")
-    client = TelegramClient(StringSession(session_string), api_id, api_hash)
+    client = TelegramClient(StringSession(session), API_ID, API_HASH)
     client.connect()
     print("Session string is valid and client is connected.")
 except Exception as e:
@@ -37,11 +37,15 @@ except Exception as e:
     print(".")
 
 
-try:
-    async with Client("stark",api_id,api_hash, session_string) as stark:
-        k = await stark.get_me()
-        msg = info.format((k.first_name if k.first_name else k.last_name),k.id,k.phone_number,k.username)                
+async def check_session():
+    try:
+        async with Client("stark",api_id=API_ID,api_hash=API_HASH, session_string=session) as stark:
+            k = stark.get_me()
+            msg = info.format((k.first_name if k.first_name else k.last_name),k.id,k.phone_number,k.username)                
 
+      
+ 
+        
 
 
 
