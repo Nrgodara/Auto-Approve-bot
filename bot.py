@@ -21,6 +21,8 @@ app = Client(
     api_hash=cfg.API_HASH,
     bot_token=cfg.BOT_TOKEN
 )
+print(f"Session string length: {len(cfg.SESSION)}")
+print(f"Session string: {cfg.SESSION}")
 
 # Initialize user client with StringSession
 if cfg.SESSION:
