@@ -6,6 +6,8 @@ from database import add_user, add_group, all_users, all_groups, users, remove_u
 from configs import cfg
 import random, asyncio
 
+
+
 app = Client(
     "approver",
     api_id=cfg.API_ID,
@@ -29,8 +31,21 @@ gif = [
 
 
 #━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Main process ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+def handle_floodwait(func):
+    async def wrapper(*args, **kwargs):
+        try:
+            return await func(*args, **kwargs)
+        except FloodWait as e:
+            print(f"Sleeping for {e.x} seconds due to FloodWait...")
+            await asyncio.sleep(e.x)
+            return await wrapper(*args, **kwargs)
+    return wrapper
+
+
+
 
 @app.on_chat_join_request(filters.group | filters.channel & ~filters.private)
+@handle_floodwait
 async def approve(_, m : Message):
     op = m.chat
     kk = m.from_user
@@ -186,6 +201,40 @@ async def fcast(_, m : Message):
             failed +=1
 
     await lel.edit(f"✅Successfull to `{success}` users.\n❌ Faild to `{failed}` users.\n👾 Found `{blocked}` Blocked users \n👻 Found `{deactivated}` Deactivated users.")
+
+    #_-_-_-_-__-_-_-_-_-_-__--__-_-#
+
+@app.on_message(filters.command("approve"))
+@handle_floodwait
+async def approve_all_requests(_, m: Message):
+    try:
+        # Fetch all pending join requests
+        pending_requests = await app.get_chat_join_requests(m.chat.id)
+
+        if not pending_requests:
+            await m.reply_text("No pending join requests to approve.")
+            return
+
+        approved_count = 0
+        for request in pending_requests:
+            try:
+                await app.approve_chat_join_request(m.chat.id, request.user.id)
+                approved_count += 1
+                await app.send_message(request.user.id, f"Hello {request.user.mention}, your join request to {m.chat.title} has been approved!")
+            except Exception as e:
+                logger.error(f"Failed to approve {request.user.id}: {str(e)}")
+                await m.reply_text(f"∆Failed to approve {request.user.id}: {str(e)}")
+    
+
+
+        await m.reply_text(f"✅ Approved `{approved_count}` pending requests.")
+
+    except Exception as e:
+        logger.error(f"Error while approving requests: {str(e)}")
+        await m.reply_text("An error occurred while approving requests.")
+
+
+#_-_-_-__-_-__-_-_-_--__-_--_-_-_-_--
 
 print("I'm Alive Now!")
 app.run()
