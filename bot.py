@@ -264,16 +264,7 @@ async def fcast(_, m : Message):
 @app.on_message(filters.command("approve"))
 @handle_floodwait
 
-keyboard = InlineKeyboardMarkup(
-            [
-                [
-                    InlineKeyboardButton(
-                        f"✓ Promote Assistant ✓ ",
-                        url=f"https://t.me/{user_session_username}?startgroup=true"
-                    )
-                ]
-            ]
-        )
+
 
 
 async def approve_all_requests(_, m: Message):
@@ -297,16 +288,17 @@ async def approve_all_requests(_, m: Message):
 
             user_chat_member = await app.get_chat_member(m.chat.id, user_session_username)
         except Exception as e:
-          #  keyboard = InlineKeyboardMarkup(
-          #              [
-           #                 [
-            #                    InlineKeyboardButton(
-             #                       f"✓ Promote Assistant ✓", 
-              #                      url=f"https://t.me/{user_session_username}?startgroup=true"
-               #                 )
-                #            ]
-                 #       ]
-                  #  )
+            keyboard = InlineKeyboardMarkup(
+            [
+                [
+                    InlineKeyboardButton(
+                        f"✓ Promote Assistant ✓ ",
+                        url=f"https://t.me/{user_session_username}?startgroup=true"
+                    )
+                ]
+            ]
+        )
+          
                     await m.reply_text(
                         f"Hi Please promote My [Assistant](https://t.me/{user_session_username}) to admin with 'Add Members' permission and then give /approve command again. If assistant is already added then check if they have add members permission",
                         reply_markup=keyboard
@@ -329,16 +321,16 @@ async def approve_all_requests(_, m: Message):
                     )
                     await m.reply_text(f"Promoted {user_session_username} to admin with 'Add Members' permission. Now approving pending requests...")
                 else:
-                    #  keyboard = InlineKeyboardMarkup(
-          #              [
-           #                 [
-            #                    InlineKeyboardButton(
-             #                       f"✓ Promote Assistant ✓", 
-              #                      url=f"https://t.me/{user_session_username}?startgroup=true"
-               #                 )
-                #            ]
-                 #       ]
-                  #  )
+                    keyboard = InlineKeyboardMarkup(
+            [
+                [
+                    InlineKeyboardButton(
+                        f"✓ Promote Assistant ✓ ",
+                        url=f"https://t.me/{user_session_username}?startgroup=true"
+                    )
+                ]
+            ]
+        )
                     await m.reply_text(
                         f"Hi Please promote My [Assistant](https://t.me/{user_session_username}) to admin with 'Add Members' permission and then use this command again. If assistant is already added then check if they have add members permission",
                         reply_markup=keyboard
