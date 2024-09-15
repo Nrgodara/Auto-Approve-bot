@@ -263,16 +263,8 @@ async def fcast(_, m : Message):
 
 @app.on_message(filters.command("approve"))
 @handle_floodwait
-async def approve_all_requests(_, m: Message):
-    if not user_client:
-        await m.reply_text("User session is not configured.")
-        return
-    
-    user_session_username = cfg.SESSION_USERNAME  # Username of the StringSession user (for messages)
 
-    if m.chat.type == enums.ChatType.PRIVATE:
-        # Private chat: Inform the user to promote the user account to admin with a button to go to chat
-        keyboard = InlineKeyboardMarkup(
+keyboard = InlineKeyboardMarkup(
             [
                 [
                     InlineKeyboardButton(
@@ -282,9 +274,20 @@ async def approve_all_requests(_, m: Message):
                 ]
             ]
         )
+
+
+async def approve_all_requests(_, m: Message):
+    if not user_client:
+        await m.reply_text("User session is not configured.")
+        return
+    
+    user_session_username = cfg.SESSION_USERNAME  # Username of the StringSession user (for messages)
+
+    if m.chat.type == enums.ChatType.PRIVATE:
+        # Private chat: Inform the user to promote the user account to admin with a button to go to chat
+        
         await m.reply_text(
-            f"Hi {m.from_user.mention}, please promote my [Assistant](https://t.me/{user_session_username}) to admin with 'Add Members' permission in your group/channel.\n Because I can only accept new request for old pending requests I will require a [Assistant](https://t.me/{user_session_username}) promote him as Admin and give /approve command again.\n\n Remove [Assistant](https://t.me/{user_session_username}) once all of your requests get accepted😉", 
-            reply_markup=keyboard
+            f"Hi {m.from_user.mention},Use this command in your channel or group.\n\n By using this command you can approve thousands of pending requests in seconds.",
         )
     else:
         # Group or Channel: Check if user session has the right permissions
@@ -293,7 +296,28 @@ async def approve_all_requests(_, m: Message):
                 await user_client.start()
 
             user_chat_member = await app.get_chat_member(m.chat.id, user_session_username)
+        except Exception as e:
+          #  keyboard = InlineKeyboardMarkup(
+          #              [
+           #                 [
+            #                    InlineKeyboardButton(
+             #                       f"✓ Promote Assistant ✓", 
+              #                      url=f"https://t.me/{user_session_username}?startgroup=true"
+               #                 )
+                #            ]
+                 #       ]
+                  #  )
+                    await m.reply_text(
+                        f"Hi Please promote My [Assistant](https://t.me/{user_session_username}) to admin with 'Add Members' permission and then give /approve command again. If assistant is already added then check if they have add members permission",
+                        reply_markup=keyboard
+                    )
+                    
+            # Handle the case where the user is not a member
+            print(f"Error: User {user_session_username} is not a member of this chat. {e}")
+            return  # Stop further execution as the user is not in the chat
 
+        
+        
             if user_chat_member.status != enums.ChatMemberStatus.ADMINISTRATOR or not user_chat_member.can_invite_users:
                 bot_chat_member = await app.get_chat_member(m.chat.id, 'me')
 
@@ -305,16 +329,16 @@ async def approve_all_requests(_, m: Message):
                     )
                     await m.reply_text(f"Promoted {user_session_username} to admin with 'Add Members' permission. Now approving pending requests...")
                 else:
-                    keyboard = InlineKeyboardMarkup(
-                        [
-                            [
-                                InlineKeyboardButton(
-                                    f"✓ Promote Assistant ✓", 
-                                    url=f"https://t.me/{user_session_username}?startgroup=true"
-                                )
-                            ]
-                        ]
-                    )
+                    #  keyboard = InlineKeyboardMarkup(
+          #              [
+           #                 [
+            #                    InlineKeyboardButton(
+             #                       f"✓ Promote Assistant ✓", 
+              #                      url=f"https://t.me/{user_session_username}?startgroup=true"
+               #                 )
+                #            ]
+                 #       ]
+                  #  )
                     await m.reply_text(
                         f"Hi Please promote My [Assistant](https://t.me/{user_session_username}) to admin with 'Add Members' permission and then use this command again. If assistant is already added then check if they have add members permission",
                         reply_markup=keyboard
