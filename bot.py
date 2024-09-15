@@ -43,6 +43,7 @@ async def check_session():
         async with Client("stark",api_id=API_ID,api_hash=API_HASH, session_string=session) as stark:
             k = stark.get_me()
             msg = info.format((k.first_name if k.first_name else k.last_name),k.id,k.phone_number,k.username)
+            print (f"msg")
     except Exception as e:
         print(f"Error: {e}")
     
