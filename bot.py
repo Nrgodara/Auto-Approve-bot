@@ -17,8 +17,8 @@ from telethon.sync import TelegramClient
 #from telethon.sessions import StringSession
 
 api_id = cfg.API_ID
-api_hash = cfg.YOUR_API_HASH
-session_string = cfg.SESSION  # Replace with your session string
+api_hash = cfg.API_HASH
+session_string = cfg.SESSION  
 
 try:
     print ("checking session validity")
