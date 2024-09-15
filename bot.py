@@ -2,6 +2,7 @@ from pyrogram.types import Message, InlineKeyboardButton, InlineKeyboardMarkup, 
 from pyrogram import filters, Client, errors, enums
 from pyrogram.errors import UserNotParticipant
 from pyrogram.errors.exceptions.flood_420 import FloodWait
+from pyrogram.types.messages_and_media.message import Str
 from telethon.sessions import StringSession
 from telethon import TelegramClient
 from database import add_user, add_group, all_users, all_groups, users, remove_user
