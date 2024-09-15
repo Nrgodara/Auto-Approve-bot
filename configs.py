@@ -8,7 +8,7 @@ class Config:
     CHID = int(getenv("CHID", "-1001945845419"))
     SUDO = list(map(int, getenv("SUDO", "1280494242").split()))
     MONGO_URI = getenv("MONGO_URI", "mongodb+srv://sumansamtiya83:Suman321@cluster0.p7l7y.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
-    SESSION = getenv("SESSION", "BQGCVgcAxAviJQXUqk92KZvVjWyTvA5hU_2cAmL3azzmwR3Eu0bo4EFpka9XJojAxoTSZUV8b-Dmi4tt72EL280g1r3YUdwYitJI0cPc05CZvuXQdwhXG0N8zZEyKKtZUqc2Ci_LYx01vfqVpEKh4rp8CotbYaUF64hf5g4fIx-PLmNlB50cknJUi2ZRr7r6hVev8LVJfAZx99-83B4x44M1bIELhaxz0Q-V-bJi5yVmSQqMBe95bs3w-m95qISimMyckNpxnrMnN4yo8gj6wILrBTC3LWiHh0bNCFKUsSLvKPN1iyiPJfUUCOklDyUQpO5prvS8pJJmvmILlmj9HXuXHfiQOgAAAABMUsqiAA")
+    SESSION = getenv("SESSION", "1BVtsOIwBu2X7acNGcO6QY9jeoTCIhU4LLgmLcLx2uXWXltiem0eOE8o1lhAJJ-Sk2Eh_zt76IPIGb7vIaSR2AoE7lapXOmOtN67Izka_WDqsKbcMXrkQIa0bUBI5C_fjHC1CI7RCGCHjH0wkjCl8MG4hycDtb-ZUQmeY39laZWp_I7XE2Sfuta3hG7DshLEQ5DwF9JNsU5oS6swNOioPBm-dtcJqQhse5m7JknapdsBKgUq-cNYIEN71xJOmY1gtENI3umEtwd7bOnWbpfmrExdQ_GtTKmBd76kAR3roYIY36r5Qkz3oF0OvfuJDX1oEpOvxub9oQ5wmA71ZeyOOpKgd2-vJ1w8=")
     SESSION_USERNAME = getenv("SESSION_USERNAME", "Mr_Mahiji")
  
 cfg = Config()
