@@ -36,6 +36,7 @@ except Exception as e:
     print(".")
     print(".")
    
+#add pyrogram method here if required
 
 
 
