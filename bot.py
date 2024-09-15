@@ -313,7 +313,7 @@ async def approve_all_requests(_, m: Message):
 
         # Check if the bot itself is an admin with 'Add Members' permission
         bot_chat_member = await app.get_chat_member(m.chat.id, 'me')
-        
+
         if bot_chat_member is None:
             logger.error("Could not retrieve bot's chat member info.")
             await m.reply_text("⚠️ I couldn't retrieve my permissions. Please ensure I'm in the chat and an admin.")
@@ -325,12 +325,19 @@ async def approve_all_requests(_, m: Message):
             return
 
         # If both bot and assistant have permissions, proceed with approval
-        pending_requests = app.get_chat_join_requests(m.chat.id)  # This returns an async generator
+        if not user_client:
+            logger.warning("User client is not initialized.")
+            await m.reply_text("User client is not available to process join requests.")
+            return
+
+        # Retrieve and process pending join requests using user_client
+        pending_requests = user_client.get_chat_join_requests(m.chat.id)  # This returns an async generator
+
         approved_count = 0
 
         async for request in pending_requests:
             try:
-                await app.approve_chat_join_request(m.chat.id, request.user.id)
+                await user_client.approve_chat_join_request(m.chat.id, request.user.id)
                 approved_count += 1
                 logger.info(f"Approved join request for user {request.user.id} in chat {m.chat.id}.")
                 await app.send_message(request.user.id, f"Hello {request.user.mention}, your join request to {m.chat.title} has been approved!")
