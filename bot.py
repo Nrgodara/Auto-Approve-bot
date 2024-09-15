@@ -35,6 +35,7 @@ except Exception as e:
     print(".")
     print(".")
     print(".")
+    pass 
 
 
 async def check_session():
@@ -43,7 +44,8 @@ async def check_session():
             k = stark.get_me()
             msg = info.format((k.first_name if k.first_name else k.last_name),k.id,k.phone_number,k.username)
     except Exception as e:
-    print(f"Error: {e}")
+        print(f"Error: {e}")
+    
 
       
  
