@@ -24,7 +24,7 @@ print(f"Session string: '{session_string}'")
 try:
     print ("checking session validity")
     client = TelegramClient(StringSession(session_string), api_id, api_hash)
-    client.start()
+    client.connect()
     print("Session string is valid and client is connected.")
 except Exception as e:
     print(f"Error: {e}")
@@ -43,7 +43,7 @@ print(f"Session string: {cfg.SESSION}")
 
 # Initialize user client with StringSession
 if cfg.SESSION:
-    user_client = Client(
+    user_client = TelegramClient(
         session_name=StringSession(cfg.SESSION),
         api_id=cfg.API_ID,
         api_hash=cfg.API_HASH
