@@ -6,6 +6,12 @@ from database import add_user, add_group, all_users, all_groups, users, remove_u
 from configs import cfg
 import random, asyncio
 
+import logging
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
+
+
 
 
 app = Client(
