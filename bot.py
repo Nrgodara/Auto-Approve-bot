@@ -62,7 +62,7 @@ app = Client(
     api_hash=cfg.API_HASH,
     bot_token=cfg.BOT_TOKEN
 )
-if cfg.SESSUON:
+if cfg.SESSION:
     app = Client(
         "stark",
         api_id=API_ID,
