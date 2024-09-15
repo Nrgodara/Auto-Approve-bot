@@ -27,9 +27,17 @@ try:
     client = TelegramClient(StringSession(session_string), api_id, api_hash)
     client.connect()
     print("Session string is valid and client is connected.")
+else:
+    async with Client("stark",api_id=API_ID,api_hash=API_HASH, session_string=session) as stark:
+        k = await stark.get_me()
+        msg = info.format((k.first_name if k.first_name else k.last_name),k.id,k.phone_number,k.username)                
+
+
+
+
 except Exception as e:
     print(f"Error: {e}")
-#-_-_-_-__-__-_-_-__-_-_-_-#
+#-_-_-_-__-__-_-_-__-_-_-_-_#
 
 
 
