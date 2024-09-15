@@ -23,9 +23,9 @@ app = Client(
 )
 
 # Initialize user client with StringSession
-if cfg.Session:
+if cfg.SESSION:
     user_client = Client(
-        session_name=StringSession(cfg.Session),
+        session_name=session_string(cfg.Session),
         api_id=cfg.API_ID,
         api_hash=cfg.API_HASH
     )
