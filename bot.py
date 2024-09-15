@@ -11,7 +11,22 @@ import logging
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
+#-_-_-_-_-_-_-_-_-_-__-__-#
 
+from telethon.sync import TelegramClientfrom telethon.sync import TelegramClient
+#from telethon.sessions import StringSession
+
+api_id = 'YOUR_API_ID'
+api_hash = 'YOUR_API_HASH'
+session_string = 'YOUR_SESSION_STRING'  # Replace with your session string
+
+try:
+    client = TelegramClient(StringSession(session_string), api_id, api_hash)
+    client.start()
+    print("Session string is valid and client is connected.")
+except Exception as e:
+    print(f"Error: {e}")
+#-_-_-_-__-__-_-_-__-_-_-_-#
 
 
 
