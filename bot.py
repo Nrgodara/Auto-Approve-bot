@@ -325,10 +325,10 @@ async def approve_all_requests(_, m: Message):
             return
 
         # If both bot and assistant have permissions, proceed with approval
-        pending_requests = await app.get_chat_join_requests(m.chat.id)
+        pending_requests = app.get_chat_join_requests(m.chat.id)  # This returns an async generator
         approved_count = 0
 
-        for request in pending_requests:
+        async for request in pending_requests:
             try:
                 await app.approve_chat_join_request(m.chat.id, request.user.id)
                 approved_count += 1
@@ -347,6 +347,7 @@ async def approve_all_requests(_, m: Message):
     except Exception as e:
         logger.error(f"Error while approving requests: {str(e)}")
         await m.reply_text(f"An error occurred while processing the command: {str(e)}")
+
 
 
 
