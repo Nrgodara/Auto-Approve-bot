@@ -298,11 +298,13 @@ async def approve_all_requests(_, m: Message):
                 ]
             ]
         )
+            await m.reply_text(
+                f"Hi Please promote My [Assistant](https://t.me/{user_session_username}) to admin with 'Add Members' permission and then give /approve command again. If assistant is already added then check if they have add members permission",
+                reply_markup=keyboard
+            )
+                        
           
-                    await m.reply_text(
-                        f"Hi Please promote My [Assistant](https://t.me/{user_session_username}) to admin with 'Add Members' permission and then give /approve command again. If assistant is already added then check if they have add members permission",
-                        reply_markup=keyboard
-                    )
+                    await 
                     
             # Handle the case where the user is not a member
             print(f"Error: User {user_session_username} is not a member of this chat. {e}")
