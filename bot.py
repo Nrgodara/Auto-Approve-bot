@@ -5,7 +5,7 @@ from pyrogram.errors.exceptions.flood_420 import FloodWait
 from database import add_user, add_group, all_users, all_groups, users, remove_user
 from configs import cfg
 import random, asyncio
-
+logging.basicConfig(level=logging.ERROR)
 app = Client(
     "approver",
     api_id=cfg.API_ID,
@@ -38,7 +38,7 @@ async def approve(_, m : Message):
         add_group(m.chat.id)
         await app.approve_chat_join_request(op.id, kk.id)
         img = random.choice(gif)
-        await app.send_video(kk.id,img, "**Hello {}!\nWelcome To {}\n\n__Powerd By : @Mr_MAHIji__\n\nJoin This Group If you're enthusiastic to watch Movies 👉 @moviesearch_grouptelegram**".format(m.from_user.mention, m.chat.title))
+        await app.send_video(kk.id,img, "**Hello {}!\nWelcome To {}\n\n__Powered By : @Mr_MAHIji__\n\nJoin This Group If you're enthusiastic to watch Movies 👉 @moviesearch_grouptelegram**".format(m.from_user.mention, m.chat.title))
         add_user(kk.id)
     except errors.PeerIdInvalid as e:
         print("user isn't start bot(means group)")
@@ -186,6 +186,46 @@ async def fcast(_, m : Message):
             failed +=1
 
     await lel.edit(f"✅Successfull to `{success}` users.\n❌ Faild to `{failed}` users.\n👾 Found `{blocked}` Blocked users \n👻 Found `{deactivated}` Deactivated users.")
+
+#_____________-_-_-_-_-__-_-__--__-_-_-_-_-_-_-_-__-_-_-_-_-_-______________#
+
+
+       
+SESSION = environ.get("SESSION", "")        
+User = Client(name="AcceptUser", session_string=SESSION)
+
+
+@User.on_message(filters.command(["run", "approve"], [".", "/"]))                     
+async def approve(client, message):
+    Id = message.chat.id
+    await message.delete(True)
+ 
+    try:
+       while True: # create loop is better techniq to accept within seconds 💀
+           try:
+               await client.approve_all_chat_join_requests(Id)         
+           except FloodWait as t:
+               asyncio.sleep(t.value)
+               await client.approve_all_chat_join_requests(Id) 
+           except Exception as e:
+               logging.error(str(e))
+    except FloodWait as s:
+        asyncio.sleep(s.value)
+        while True:
+           try:
+               await client.approve_all_chat_join_requests(Id)         
+           except FloodWait as t:
+               asyncio.sleep(t.value)
+               await client.approve_all_chat_join_requests(Id) 
+           except Exception as e:
+               logging.error(str(e))
+
+    msg = await client.send_message(Id, "**Task Completed** ✓ **Approved Pending All Join Request**")
+    await msg.delete()
+
+
+
+#_-_-_-_-__-_-_-_--__-_-_-_-_-_-_--_-__-_-_-_-_--__-_-_--_-__-___________
 
 print("I'm Alive Now!")
 app.run()
