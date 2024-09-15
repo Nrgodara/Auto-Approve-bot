@@ -214,30 +214,28 @@ async def fcast(_, m : Message):
 @handle_floodwait
 async def approve_all_requests(_, m: Message):
     try:
-        # Fetch all pending join requests
-        pending_requests = await app.get_chat_join_requests(m.chat.id)
-
-        if not pending_requests:
-            await m.reply_text("No pending join requests to approve.")
-            return
+        # Fetch pending join requests
+        pending_requests = app.get_chat_join_requests(m.chat.id)  # No await here since it's an async generator
 
         approved_count = 0
-        for request in pending_requests:
+
+        # Iterate over the async generator
+        async for request in pending_requests:
             try:
                 await app.approve_chat_join_request(m.chat.id, request.user.id)
                 approved_count += 1
                 await app.send_message(request.user.id, f"Hello {request.user.mention}, your join request to {m.chat.title} has been approved!")
             except Exception as e:
                 logger.error(f"Failed to approve {request.user.id}: {str(e)}")
-                await m.reply_text(f"∆Failed to approve {request.user.id}: {str(e)}")
-    
 
-
-        await m.reply_text(f"✅ Approved `{approved_count}` pending requests.")
+        if approved_count == 0:
+            await m.reply_text("No pending join requests to approve.")
+        else:
+            await m.reply_text(f"✅ Approved `{approved_count}` pending requests.")
 
     except Exception as e:
         logger.error(f"Error while approving requests: {str(e)}")
-        await m.reply_text("An error occurred while approving requests.")
+        await m.reply_text(f"An error occurred while approving requests. : {str(e)}")
 
 
 #_-_-_-__-_-__-_-_-_--__-_--_-_-_-_--
