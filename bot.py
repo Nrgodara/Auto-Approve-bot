@@ -271,92 +271,56 @@ async def approve_all_requests(_, m: Message):
         logger.warning("User session is not configured.")
         await m.reply_text("User session is not configured.")
         return
-    
-    user_session_username = cfg.SESSION_USERNAME  # Username of the StringSession user (for messages)
+
+    user_session_username = cfg.SESSION_USERNAME  # Assistant account username
     logger.info(f"Command received from user {m.from_user.id} in chat {m.chat.id}.")
 
     if m.chat.type == enums.ChatType.PRIVATE:
-        # Private chat: Inform the user to promote the user account to admin with a button to go to chat
+        # Private chat: Inform the user to use this command in a group or channel
         logger.info(f"Private chat detected, informing user {m.from_user.id}.")
         await m.reply_text(
-            f"Hi {m.from_user.mention}, use this command in your channel or group.\n\nBy using this command, you can approve thousands of pending requests in seconds.",
+            f"Hi {m.from_user.mention}, use this command in your channel or group to approve pending requests."
         )
-    else:
-        # Group or Channel: Check if user session has the right permissions
-        try:
-            if not user_client.is_connected:
-                logger.info("User client not connected, starting connection.")
-                await user_client.start()
+        return
 
-            user_chat_member = await app.get_chat_member(m.chat.id, user_session_username)
-        except Exception as e:
-            logger.error(f"Error checking permissions for user {user_session_username}: {str(e)}")
-            keyboard = InlineKeyboardMarkup(
-                [
-                    [
-                        InlineKeyboardButton(
-                            f"✓ Promote Assistant ✓",
-                            url=f"https://t.me/{user_session_username}?startgroup=true"
-                        )
-                    ]
-                ]
-            )
-            await m.reply_text(
-                f"Hi, please promote my [Assistant](https://t.me/{user_session_username}) to admin with 'Add Members' permission and then give the /approve command again. If the assistant is already added, then check if they have 'add members' permission.",
-                reply_markup=keyboard,
-                disable_web_page_preview=True
-            )
-            return
-
-        # Check if the bot itself is an admin and has required permissions
-        bot_chat_member = await app.get_chat_member(m.chat.id, 'me')
-
-        if bot_chat_member.status != enums.ChatMemberStatus.ADMINISTRATOR:
-            # Bot is not an admin, notify the chat and return
-            logger.error(f"Bot is not an admin in {m.chat.id}.")
-            await m.reply_text("⚠️ I am not an admin in this chat. Please make me an admin with 'Add Members' permission.")
-            return
-        elif not bot_chat_member.can_invite_users:
-            # Bot is an admin but does not have the 'Add Members' permission
-            logger.error(f"Bot does not have 'Add Members' permission in {m.chat.id}.")
-            await m.reply_text("⚠️ I need 'Add Members' permission to approve join requests. Please grant me this permission.")
-            return
-
-        # Bot is an admin and has 'Add Members' permission, now check if the assistant needs to be promoted
+    try:
+        # Check if assistant has the right permissions
+        user_chat_member = await app.get_chat_member(m.chat.id, user_session_username)
         if user_chat_member.status != enums.ChatMemberStatus.ADMINISTRATOR or not user_chat_member.can_invite_users:
-            logger.info(f"Promoting {user_session_username} to admin with 'Add Members' permission.")
-            await app.promote_chat_member(
-                chat_id=m.chat.id,
-                user_id=user_session_username,
-                can_invite_users=True  # Grant "Add Members" permission
+            # Assistant does not have the required permissions
+            logger.error(f"{user_session_username} does not have 'Add Members' permission in {m.chat.id}.")
+            await m.reply_text(
+                f"⚠️ The assistant account @{user_session_username} is not an admin or lacks the 'Add Members' permission.\n"
+                f"Please make sure the assistant has the necessary permissions to approve requests."
             )
-            await m.reply_text(f"{user_session_username} has been promoted to admin with 'Add Members' permission.")
+            return
+
+       
+
+        # If both bot and assistant have permissions, proceed with approval
+        pending_requests = user_client.get_chat_join_requests(m.chat.id)
+        approved_count = 0
+
+        async for request in pending_requests:
+            try:
+                await user_client.approve_chat_join_request(m.chat.id, request.user.id)
+                approved_count += 1
+                logger.info(f"Approved join request for user {request.user.id} in chat {m.chat.id}.")
+                await app.send_message(request.user.id, f"Hello {request.user.mention}, your join request to {m.chat.title} has been approved!")
+            except Exception as e:
+                logger.error(f"Failed to approve request for user {request.user.id}: {str(e)}")
+
+        if approved_count == 0:
+            logger.info("No pending join requests to approve.")
+            await m.reply_text("No pending join requests to approve.")
         else:
-            logger.info(f"{user_session_username} is already an admin with 'Add Members' permission.")
+            logger.info(f"Approved {approved_count} pending requests.")
+            await m.reply_text(f"✅ Approved `{approved_count}` pending requests.")
 
-        try:
-            pending_requests = user_client.get_chat_join_requests(m.chat.id)
-            approved_count = 0
+    except Exception as e:
+        logger.error(f"Error while approving requests: {str(e)}")
+        await m.reply_text(f"An error occurred while processing the command: {str(e)}")
 
-            async for request in pending_requests:
-                try:
-                    await user_client.approve_chat_join_request(m.chat.id, request.user.id)
-                    approved_count += 1
-                    logger.info(f"Approved join request for user {request.user.id} in chat {m.chat.id}.")
-                    await app.send_message(request.user.id, f"Hello {request.user.mention}, your join request to {m.chat.title} has been approved!")
-                except Exception as e:
-                    logger.error(f"Failed to approve request for user {request.user.id}: {str(e)}")
-
-            if approved_count == 0:
-                logger.info("No pending join requests to approve.")
-                await m.reply_text("No pending join requests to approve.")
-            else:
-                logger.info(f"Approved {approved_count} pending requests.")
-                await m.reply_text(f"✅ Approved `{approved_count}` pending requests.")
-
-        except Exception as e:
-            logger.error(f"Error while approving requests: {str(e)}")
-            await m.reply_text(f"An error occurred while processing the command: {str(e)}")
 
 
 
