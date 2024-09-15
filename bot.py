@@ -266,7 +266,6 @@ async def fcast(_, m : Message):
 
 @app.on_message(filters.command("approve"))
 @handle_floodwait
-
 async def approve_all_requests(_, m: Message):
     if not user_client:
         logger.warning("User session is not configured.")
@@ -308,34 +307,32 @@ async def approve_all_requests(_, m: Message):
                 disable_web_page_preview=True
             )
             return
-        
-        if user_chat_member.status != enums.ChatMemberStatus.ADMINISTRATOR or not user_chat_member.can_invite_users:
-            bot_chat_member = await app.get_chat_member(m.chat.id, 'me')
 
-            if bot_chat_member.status == enums.ChatMemberStatus.ADMINISTRATOR and bot_chat_member.can_promote_members:
-                logger.info(f"Promoting {user_session_username} to admin with 'Add Members' permission.")
-                await app.promote_chat_member(
-                    chat_id=m.chat.id,
-                    user_id=user_session_username,
-                    can_invite_users=True  # Grant "Add Members" permission
-                )
-            else:
-                keyboard = InlineKeyboardMarkup(
-                    [
-                        [
-                            InlineKeyboardButton(
-                                f"✓ Promote Assistant ✓",
-                                url=f"https://t.me/{user_session_username}?startgroup=true"
-                            )
-                        ]
-                    ]
-                )
-                await m.reply_text(
-                    f"Hi, please promote my [Assistant](https://t.me/{user_session_username}) to admin with 'Add Members' permission and then use this command again. If the assistant is already added, check if they have 'add members' permission.",
-                    reply_markup=keyboard,
-                    disable_web_page_preview=True
-                )
-                return
+        # Check if the bot itself is an admin and has required permissions
+        bot_chat_member = await app.get_chat_member(m.chat.id, 'me')
+
+        if bot_chat_member.status != enums.ChatMemberStatus.ADMINISTRATOR:
+            # Bot is not an admin, notify the chat and return
+            logger.error(f"Bot is not an admin in {m.chat.id}.")
+            await m.reply_text("⚠️ I am not an admin in this chat. Please make me an admin with 'Add Members' permission.")
+            return
+        elif not bot_chat_member.can_invite_users:
+            # Bot is an admin but does not have the 'Add Members' permission
+            logger.error(f"Bot does not have 'Add Members' permission in {m.chat.id}.")
+            await m.reply_text("⚠️ I need 'Add Members' permission to approve join requests. Please grant me this permission.")
+            return
+
+        # Bot is an admin and has 'Add Members' permission, now check if the assistant needs to be promoted
+        if user_chat_member.status != enums.ChatMemberStatus.ADMINISTRATOR or not user_chat_member.can_invite_users:
+            logger.info(f"Promoting {user_session_username} to admin with 'Add Members' permission.")
+            await app.promote_chat_member(
+                chat_id=m.chat.id,
+                user_id=user_session_username,
+                can_invite_users=True  # Grant "Add Members" permission
+            )
+            await m.reply_text(f"{user_session_username} has been promoted to admin with 'Add Members' permission.")
+        else:
+            logger.info(f"{user_session_username} is already an admin with 'Add Members' permission.")
 
         try:
             pending_requests = user_client.get_chat_join_requests(m.chat.id)
@@ -360,6 +357,8 @@ async def approve_all_requests(_, m: Message):
         except Exception as e:
             logger.error(f"Error while approving requests: {str(e)}")
             await m.reply_text(f"An error occurred while processing the command: {str(e)}")
+
+
 
 
 
