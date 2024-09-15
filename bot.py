@@ -125,7 +125,7 @@ async def approve(_, m : Message):
 async def op(_, m :Message):
     try:
         if m.chat.type == enums.ChatType.PRIVATE:
-        await app.get_chat_member(cfg.CHID, m.from_user.id) 
+            await app.get_chat_member(cfg.CHID, m.from_user.id)
         #if m.chat.type == enums.ChatType.PRIVATE:
             keyboard = InlineKeyboardMarkup(
                 [
