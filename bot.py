@@ -20,7 +20,7 @@ from telethon.sync import TelegramClient
 
 API_ID = cfg.API_ID
 API_HASH = cfg.API_HASH
-session = "cfg.SESSION" 
+session = cfg.SESSION
 #print(f"Session string length: {len(session_string)}")
 #print(f"Session string: '{session_string}'")
 try:
