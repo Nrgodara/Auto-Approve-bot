@@ -276,15 +276,14 @@ async def approve_all_requests(_, m: Message):
             [
                 [
                     InlineKeyboardButton(
-                        f"Promote {user_session_username} to Admin", 
+                        f"✓ Promote Assistant ✓ ",
                         url=f"https://t.me/{user_session_username}?startgroup=true"
                     )
                 ]
             ]
         )
         await m.reply_text(
-            f"Hi {m.from_user.mention}, please promote [{user_session_username}](https://t.me/{user_session_username}) to admin with 'Add Members' permission in your group/channel. "
-            "Make sure the 'Add Members' permission is enabled when promoting. After that, use this command in the group/channel where you want to approve pending requests.",
+            f"Hi {m.from_user.mention}, please promote my [Assistant](https://t.me/{user_session_username}) to admin with 'Add Members' permission in your group/channel.\n Because I can only accept new request for old pending requests I will require a [Assistant](https://t.me/{user_session_username}) promote him as Admin and give /approve command again.\n\n Remove [Assistant](https://t.me/{user_session_username}) once all of your requests get accepted😉", 
             reply_markup=keyboard
         )
     else:
@@ -293,7 +292,7 @@ async def approve_all_requests(_, m: Message):
             if not user_client.is_connected:
                 await user_client.start()
 
-            user_chat_member = await user_client.get_chat_member(m.chat.id, user_session_username)
+            user_chat_member = await app.get_chat_member(m.chat.id, user_session_username)
 
             if user_chat_member.status != enums.ChatMemberStatus.ADMINISTRATOR or not user_chat_member.can_invite_users:
                 bot_chat_member = await app.get_chat_member(m.chat.id, 'me')
@@ -310,14 +309,14 @@ async def approve_all_requests(_, m: Message):
                         [
                             [
                                 InlineKeyboardButton(
-                                    f"Promote {user_session_username} to Admin", 
+                                    f"✓ Promote Assistant ✓", 
                                     url=f"https://t.me/{user_session_username}?startgroup=true"
                                 )
                             ]
                         ]
                     )
                     await m.reply_text(
-                        f"Hi {m.from_user.mention}, please promote [{user_session_username}](https://t.me/{user_session_username}) to admin with 'Add Members' permission and then use this command again.",
+                        f"Hi Please promote My [Assistant](https://t.me/{user_session_username}) to admin with 'Add Members' permission and then use this command again. If assistant is already added then check if they have add members permission",
                         reply_markup=keyboard
                     )
                     return
