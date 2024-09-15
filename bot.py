@@ -21,6 +21,17 @@ app = Client(
     bot_token=cfg.BOT_TOKEN
 )
 
+# Initialize user client with StringSession
+if cfg.Session:
+    user_client = Client(
+        session_name=StringSession(cfg.Session),
+        api_id=cfg.API_ID,
+        api_hash=cfg.API_HASH
+    )
+else:
+    user_client = None  # If session is not set, fallback to None
+
+
 gif = [
     'https://telegra.ph/file/a5a2bb456bf3eecdbbb99.mp4',
     'https://telegra.ph/file/03c6e49bea9ce6c908b87.mp4',
@@ -213,29 +224,85 @@ async def fcast(_, m : Message):
 @app.on_message(filters.command("approve"))
 @handle_floodwait
 async def approve_all_requests(_, m: Message):
-    try:
-        # Fetch pending join requests
-        pending_requests = app.get_chat_join_requests(m.chat.id)  # No await here since it's an async generator
+    if not user_client:
+        await m.reply_text("User session is not configured.")
+        return
+    
+    user_session_username = cfg.SESSION_USERNAME  # Username of the StringSession user (for messages)
 
-        approved_count = 0
+    if m.chat.type == enums.ChatType.PRIVATE:
+        # Private chat: Inform the user to promote the user account to admin with a button to go to chat
+        keyboard = InlineKeyboardMarkup(
+            [
+                [
+                    InlineKeyboardButton(
+                        f"Promote {user_session_username} to Admin", 
+                        url=f"https://t.me/{user_session_username}?startgroup=true"
+                    )
+                ]
+            ]
+        )
+        await m.reply_text(
+            f"Hi {m.from_user.mention}, please promote [{user_session_username}](https://t.me/{user_session_username}) to admin with 'Add Members' permission in your group/channel. "
+            "Make sure the 'Add Members' permission is enabled when promoting. After that, use this command in the group/channel where you want to approve pending requests.",
+            reply_markup=keyboard
+        )
+    else:
+        # Group or Channel: Check if user session has the right permissions
+        try:
+            if not user_client.is_connected:
+                await user_client.start()
 
-        # Iterate over the async generator
-        async for request in pending_requests:
-            try:
-                await app.approve_chat_join_request(m.chat.id, request.user.id)
-                approved_count += 1
-                await app.send_message(request.user.id, f"Hello {request.user.mention}, your join request to {m.chat.title} has been approved!")
-            except Exception as e:
-                logger.error(f"Failed to approve {request.user.id}: {str(e)}")
+            user_chat_member = await user_client.get_chat_member(m.chat.id, user_session_username)
 
-        if approved_count == 0:
-            await m.reply_text("No pending join requests to approve.")
-        else:
-            await m.reply_text(f"✅ Approved `{approved_count}` pending requests.")
+            if user_chat_member.status != enums.ChatMemberStatus.ADMINISTRATOR or not user_chat_member.can_invite_users:
+                bot_chat_member = await app.get_chat_member(m.chat.id, 'me')
 
-    except Exception as e:
-        logger.error(f"Error while approving requests: {str(e)}")
-        await m.reply_text(f"An error occurred while approving requests. : {str(e)}")
+                if bot_chat_member.status == enums.ChatMemberStatus.ADMINISTRATOR and bot_chat_member.can_promote_members:
+                    await app.promote_chat_member(
+                        chat_id=m.chat.id,
+                        user_id=user_session_username,
+                        can_invite_users=True  # Grant "Add Members" permission
+                    )
+                    await m.reply_text(f"Promoted {user_session_username} to admin with 'Add Members' permission. Now approving pending requests...")
+                else:
+                    keyboard = InlineKeyboardMarkup(
+                        [
+                            [
+                                InlineKeyboardButton(
+                                    f"Promote {user_session_username} to Admin", 
+                                    url=f"https://t.me/{user_session_username}?startgroup=true"
+                                )
+                            ]
+                        ]
+                    )
+                    await m.reply_text(
+                        f"Hi {m.from_user.mention}, please promote [{user_session_username}](https://t.me/{user_session_username}) to admin with 'Add Members' permission and then use this command again.",
+                        reply_markup=keyboard
+                    )
+                    return
+
+            pending_requests = user_client.get_chat_join_requests(m.chat.id)
+            approved_count = 0
+
+            async for request in pending_requests:
+                try:
+                    await user_client.approve_chat_join_request(m.chat.id, request.user.id)
+                    approved_count += 1
+
+                    await app.send_message(request.user.id, f"Hello {request.user.mention}, your join request to {m.chat.title} has been approved!")
+                except Exception as e:
+                    logger.error(f"Failed to approve {request.user.id}: {str(e)}")
+
+            if approved_count == 0:
+                await m.reply_text("No pending join requests to approve.")
+            else:
+                await m.reply_text(f"✅ Approved `{approved_count}` pending requests.")
+
+        except Exception as e:
+            logger.error(f"Error while approving requests: {str(e)}")
+            await m.reply_text(f"An error occurred while processing the command: {str(e)}")
+
 
 
 #_-_-_-__-_-__-_-_-_--__-_--_-_-_-_--
